@@ -1,34 +1,62 @@
-from flask import Flask, jsonify
+from flask import Flask, request
+from config import config
 from flask_mysqldb import MySQL
 
-from config import config
+"""** Servicios **"""
+from service import recipe_service as recipe
 
 app = Flask(__name__)
-conexion = MySQL(app)
+mysql  = MySQL(app)
 
+# **********************************************
+# * Operaciones CRUD sobre registro de recetas *
+# **********************************************
 
-# Servicio de consulta de recetas
-@app.route('/ConsultRecipe')
+"""
+    **** Método de consulta de recetas (GetAll) ***
+"""
+@app.route('/recipe/GetRecipes', methods=["GET"])
 def listarRecetas():
-    try:
-        cursor = conexion.connection.cursor()
-        sql = 'SELECT id, name, type FROM tc_recipe'
-        cursor.execute(sql)
-        data = cursor.fetchall()
-        recipes = []
-        for item in data:
-            recipe = {'id':item[0], 'name':item[1], 'type':item[2]}
-            recipes.append(recipe)
-        return jsonify({'recetas':recipes, 'message':'Consulta exitosa', 'code':200})
-    except Exception as ex:
-        return jsonify({'recetas':{}, 'message':'Error al realizar la operación', 'code':400})
+    return recipe.get_all_recipes()
+
+"""
+    **** Método de consulta receta (GetOne) ***
+"""
+@app.route('/recipe/GetRecipe', methods=["GET"])
+def consultaRecetas():
+    id = request.args['id']
+    return recipe.get_one_recipe(id)
+
+"""
+    **** Método de actualización de receta ***
+"""
+@app.route('/recipe/UpdateRecipe', methods=["PUT"])
+def actualizarReceta():
+    return recipe.update_recipe()
+
+"""
+    **** Método de borrado de una recetas ***
+"""
+@app.route('/recipe/DeleteRecipe', methods=['DELETE'])
+def eliminarReceta():
+    return recipe.delete_recipe()
+
+"""
+    **** Método de insertado de una receta ***
+"""
+@app.route('/recipe/InsertRecipe', methods=['POST'])
+def insertarReceta():
+    return recipe.insert_recipe()
 
 
+# Función 404
 def Notfound(error):
     return '<h1>Pagina no encontrada</h1>'
 
+# Función principal de proyecto
 if __name__ == '__main__':
     app.config.from_object(config['development'])
     app.register_error_handler(404, Notfound)
     app.run()
+
 
