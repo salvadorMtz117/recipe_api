@@ -45,11 +45,14 @@ def update_recipe(data):
     try:
         # Logica de Operación
         cursor = mysql.connection.cursor()
-        sql = "UPDATE tc_recipe SET name = {0}, short_description = {1}, long_description = {2} , ranking = {3}, type = {4} WHERE id = {5};'".format(data.name,data.short_description,data.long_description,data.ranking,data.type,data.id)
-        cursor.execute(sql)
+        sql = "UPDATE tc_recipe SET name = %s, short_description = %s, long_description = %s, ranking = %s, type = %s WHERE id = %s"
+        values = (data['name'], data['short_description'], data['long_description'], data['ranking'], data['type'], data['id'])
+        cursor.execute(sql,values)
+        mysql.connection.commit()
         cursor.fetchall()
         return jsonify({'receta':{}, 'message':'Actualización exitosa', 'code':200})
     except Exception as ex:
+        print(ex)
         return jsonify({'receta':{}, 'message':'Error al realizar la operación', 'code':400})
     
 """
@@ -61,9 +64,11 @@ def delete_recipe(id):
         cursor = mysql.connection.cursor()
         sql = "DELETE FROM tc_recipe WHERE id = {0}".format(id)
         cursor.execute(sql)
+        mysql.connection.commit()
         cursor.fetchall()
         return jsonify({'receta':{}, 'message':'Borrado exitoso', 'code':200})
     except Exception as ex:
+        print(ex)
         return jsonify({'receta':{}, 'message':'Error al realizar la operación', 'code':400})
     
 """
@@ -73,11 +78,14 @@ def insert_recipe(data):
     try:
         # Logica de Operación
         cursor = mysql.connection.cursor()
-        sql = "INSERT INTO tc_recipe(id,name,short_description,long_description,ranking,type) VALUES({0},{1},{2},{3},{4},{5})".format(data.id,data.name,data.short_description,data.long_description,data.ranking,data.type)
-        cursor.execute(sql)
+        sql = "INSERT INTO tc_recipe (name, short_description, long_description, ranking, type) VALUES (%s, %s, %s, %s, %s)"
+        values = (data['name'], data['short_description'], data['long_description'], data['ranking'], data['type'])
+        cursor.execute(sql, values)
+        mysql.connection.commit()
         cursor.fetchall()
         return jsonify({'receta':{}, 'message':'Inserción exitosa', 'code':200})
     except Exception as ex:
+        print(ex)
         return jsonify({'receta':{}, 'message':'Error al realizar la operación', 'code':400})
     
 
