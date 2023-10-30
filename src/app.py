@@ -32,21 +32,24 @@ def consultaRecetas():
 """
 @app.route('/recipe/UpdateRecipe', methods=["PUT"])
 def actualizarReceta():
-    return recipe.update_recipe()
+    data = request.get_json()
+    return recipe.update_recipe(data)
 
 """
     **** Método de borrado de una recetas ***
 """
 @app.route('/recipe/DeleteRecipe', methods=['DELETE'])
 def eliminarReceta():
-    return recipe.delete_recipe()
+    id = request.args['id']
+    return recipe.delete_recipe(id)
 
 """
     **** Método de insertado de una receta ***
 """
 @app.route('/recipe/InsertRecipe', methods=['POST'])
 def insertarReceta():
-    return recipe.insert_recipe()
+    data = request.get_json()
+    return recipe.insert_recipe(data)
 
 
 # Función 404
