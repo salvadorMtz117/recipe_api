@@ -55,7 +55,7 @@ def Notfound(error):
 
 # Función principal de proyecto
 if __name__ == '__main__':
-    app.config.from_object(config['development'])
+    app.config.from_object(config['local'])
     app.register_error_handler(404, Notfound)
     app.run()
 
