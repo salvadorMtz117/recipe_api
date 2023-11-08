@@ -103,4 +103,20 @@ def insert_recipe(data):
         print(ex)
         return jsonify({'receta':{}, 'message':'Error al realizar la operación', 'code':400})
     
+"""
+*** Consulta las recetas de una categoría **
+"""
+def get_Recetas_Categoria(id):
+    try:
+        cursor = mysql.connection.cursor()
+        sql = "select id,name,ranking,key_image_1 from tc_recipe where type_id = '{0}' order by ranking desc".format(id)
+        cursor.execute(sql)
+        res = cursor.fetchall()
+        if len(res) == 0:
+            return jsonify({'recetas': [], 'message':'No se encontraron registros', 'code':400})
+        return jsonify({'recetas': res, 'message':'Consulta exitosa', 'code':200})
+    except Exception as ex:
+        print(ex)
+        return jsonify({'recetas':[], 'message':'Error al realizar la operación', 'code':400})
+    
 

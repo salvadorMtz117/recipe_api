@@ -1,13 +1,16 @@
 from flask import Flask, request
 from config import config
 from flask_mysqldb import MySQL
+from flask_cors import CORS
 
 """** Servicios **"""
 from service import recipe_service as recipe
 from service import user_service as user
+from service import utils_service as utils
 
 app = Flask(__name__)
 mysql  = MySQL(app)
+cors = CORS(app, resources={r"*": {"origins": "*"}})
 
 # **********************************************
 # * Operaciones CRUD sobre registro de recetas *
@@ -52,6 +55,14 @@ def insertarReceta():
     data = request.get_json()
     return recipe.insert_recipe(data)
 
+"""
+    **** Consulta las recetas de una categoría ***
+"""
+@app.route('/recipe/RecipeByCategory', methods=['GET'])
+def recipeByCategory():
+    id = request.args['id']
+    return recipe.get_Recetas_Categoria(id)
+
 
 # ***********************************************
 # * Operaciones CRUD sobre registro de usuarios *
@@ -88,6 +99,31 @@ def deleteUser():
     id = request.args['id']
     return user.udelete_user(id)
 
+
+# **********************************************
+# * Operaciones CRUD sobre UTILS  *
+# **********************************************
+
+"""
+    **** Consulta banners de carrusel ***
+"""
+@app.route('/utils/GetCarrusel', methods=['GET'])
+def getCarrusel():
+    return utils.get_banners()
+
+"""
+    **** Consulta categorias principales ***
+"""
+@app.route('/utils/GetCategories', methods=['GET'])
+def getCategories():
+    return utils.get_Categories()
+
+"""
+    **** Consulta categorias principales ***
+"""
+@app.route('/utils/TopRecetas', methods=['GET'])
+def getTopRecetas():
+    return utils.get_Top_Recetas()
 
 # Función 404
 def Notfound(error):
