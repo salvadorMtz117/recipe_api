@@ -14,7 +14,16 @@ class LocalConfig():
     MYSQL_DB = 'db_recipe'
     MYSQL_PORT = 3307
 
+class GCPConfig():
+    DEBUG = True
+    MYSQL_HOST = '34.29.43.72'
+    MYSQL_USER = 'recetarioadmin'
+    MYSQL_PASSWORD = '=+hsiJ3M:gi/iM$['
+    MYSQL_DB = 'db_recipe'
+    MYSQL_PORT = 3306
+
 config = {
     'development': DevelopmentConfig,
-    'local': LocalConfig
+    'local': LocalConfig,
+    'gcp': GCPConfig,
 }

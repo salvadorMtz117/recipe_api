@@ -109,7 +109,7 @@ def insert_recipe(data):
 def get_Recetas_Categoria(id):
     try:
         cursor = mysql.connection.cursor()
-        sql = "select id,name,ranking,key_image_1 from tc_recipe where type_id = '{0}' order by ranking desc".format(id)
+        sql = "select id,name,ranking,key_image_1,short_description from tc_recipe where type_id = '{0}' order by ranking desc".format(id)
         cursor.execute(sql)
         res = cursor.fetchall()
         if len(res) == 0:

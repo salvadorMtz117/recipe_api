@@ -119,7 +119,15 @@ def getCategories():
     return utils.get_Categories()
 
 """
-    **** Consulta categorias principales ***
+    **** Consulta detalle de catogoría ***
+"""
+@app.route('/utils/GetCategoryDetail', methods=['GET'])
+def getCategoryDetail():
+    id = request.args['id']
+    return utils.get_CategoryDetail(id)
+
+"""
+    **** Consulta recetas principales ***
 """
 @app.route('/utils/TopRecetas', methods=['GET'])
 def getTopRecetas():
@@ -131,7 +139,7 @@ def Notfound(error):
 
 # Función principal de proyecto
 if __name__ == '__main__':
-    app.config.from_object(config['local'])
+    app.config.from_object(config['gcp'])
     app.register_error_handler(404, Notfound)
     app.run()
 

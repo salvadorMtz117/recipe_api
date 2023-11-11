@@ -27,7 +27,7 @@ def get_banners():
 def get_Categories():
     try:
         cursor = mysql.connection.cursor()
-        sql = "select name,description,key_image_1 from tc_type where id in (3,8,11)"
+        sql = "SELECT id,name,description,key_image_1 FROM tc_type WHERE id IN (SELECT DISTINCT(type_id) FROM tc_recipe);"
         cursor.execute(sql)
         res = cursor.fetchall()
         if len(res) == 0:
@@ -36,9 +36,25 @@ def get_Categories():
     except Exception as ex:
         print(ex)
         return jsonify({'categorias':[], 'message':'Error al realizar la operación', 'code':400})
-    
+
 """
-*** Consulta categorias principales **
+*** Consulta detalle de catogoría **
+"""
+def get_CategoryDetail(id):
+    try:
+        cursor = mysql.connection.cursor()
+        sql = "SELECT description, key_image_1,name FROM tc_type WHERE id = '{0}';".format(id)
+        cursor.execute(sql)
+        res = cursor.fetchall()
+        if len(res) == 0:
+            return jsonify({'categoria': {}, 'message':'No se encontraron registros', 'code':400})
+        return jsonify({'categoria': {'Detalle': res[0][0], 'img': res[0][1], 'Nombre': res[0][2]}, 'message':'Consulta exitosa', 'code':200})
+    except Exception as ex:
+        print(ex)
+        return jsonify({'categoria':{}, 'message':'Error al realizar la operación', 'code':400})
+
+"""
+*** Consulta recetas principales **
 """
 def get_Top_Recetas():
     try:
