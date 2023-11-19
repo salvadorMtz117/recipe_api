@@ -1,5 +1,7 @@
 from flask import Flask, jsonify
 from flask_mysqldb import MySQL
+import requests
+import config as config
 
 app = Flask(__name__)
 mysql  = MySQL(app)
@@ -68,3 +70,65 @@ def get_Top_Recetas():
     except Exception as ex:
         print(ex)
         return jsonify({'toprecetas':[], 'message':'Error al realizar la operación', 'code':400})
+    
+
+"""
+*** Suscripción al news letter **
+"""
+def put_news_letter(data):
+    email = data.get('email')
+    group_id = config.apiKey.GROUP_ID  # Reemplaza con tu ID de grupo de MailerLite
+
+    headers = {
+        'Content-Type': 'application/json',
+        'X-MailerLite-ApiKey': config.apiKey.API_KEY
+    }
+
+    payload = {
+        'email': email
+    }
+
+    response = requests.post(f'https://api.mailerlite.com/api/v2/groups/{group_id}/subscribers', headers=headers, json=payload)
+
+    if response.status_code == 200:
+        return jsonify({"status": "subscribed",'message':'registro exitoso', 'code':200}), 200
+    else:
+        return jsonify({"error": response.text,'message':'Ocurrió un error al realizar el registro', 'code':400}), 400
+    
+
+"""
+*** Envía comentarios **
+"""
+
+def send_commet(data):
+    try:
+        #TODO: Obtener el usuario logueado
+        usuarioID = 2
+        results = []
+        insertComment = "INSERT INTO tc_comment (user_id,recipe_id,comment,date) VALUES ({0},{1},'{2}',NOW());".format(usuarioID,data['recipe_id'],data['comment'])
+        updateRecipe = "UPDATE tc_recipe SET ranking = {0} WHERE id = {1};".format(data['ranking'],data['recipe_id'])
+
+        print(insertComment)
+        print(updateRecipe)
+
+        cursor = mysql.connection.cursor()
+        queries = [
+            insertComment,
+            updateRecipe
+        ]
+        for query in queries:
+            cursor.execute(query)
+            data = cursor.fetchall()
+            results.append(data)
+
+        mysql.connection.commit()
+        
+        print(results)
+
+        if len(results) == 0:
+            return jsonify({'recetas':{}, 'message':'Error al realizar la operación', 'code':404})
+        else:
+            return jsonify({'message':'Operación exitosa', 'code':200}), 200
+    except Exception as ex:
+        print(ex)
+        return jsonify({'receta':{}, 'message':'Error al realizar la operación', 'code':400})

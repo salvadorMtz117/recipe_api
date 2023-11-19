@@ -140,3 +140,20 @@ def get_Recetas_Categoria(id):
         return jsonify({'recetas':[], 'message':'Error al realizar la operación', 'code':400})
     
 
+"""
+*** Busca una receta **
+"""
+def search_recipe(data):
+    try:
+        # Logica de Operación
+        cursor = mysql.connection.cursor()
+        sql = "SELECT id,name,ranking,key_image_1,short_description FROM tc_recipe WHERE MATCH(name) AGAINST('{0}');".format(data['cadena'])
+        print(sql)
+        cursor.execute(sql)
+        mysql.connection.commit()
+        res = cursor.fetchall()
+        return jsonify({'recetas': res, 'message':'Busqueda exitosa', 'code':200})
+    except Exception as ex:
+        print(ex)
+        return jsonify({'receta':{}, 'message':'Error al realizar la operación', 'code':400})
+    

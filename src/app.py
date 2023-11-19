@@ -72,6 +72,14 @@ def generatePDFRecipe():
     id = request.args['id']
     return builder.build_pdf_recipe(id)
 
+"""
+    **** Genera el PDF de una receta (Base 64) ***
+"""
+@app.route('/recipe/SearchRecipe', methods=['POST'])
+def searchRecipe():
+    data = request.get_json()
+    return recipe.search_recipe(data)
+
 
 # ***********************************************
 # * Operaciones CRUD sobre registro de usuarios *
@@ -141,6 +149,22 @@ def getCategoryDetail():
 @app.route('/utils/TopRecetas', methods=['GET'])
 def getTopRecetas():
     return utils.get_Top_Recetas()
+
+"""
+    **** NewsLetter ***
+"""
+@app.route('/utils/NewsLetter', methods=['POST'])
+def NewsLetter():
+    data = request.get_json()
+    return utils.put_news_letter(data)
+
+"""
+    **** Envía comentarios ***
+"""
+@app.route('/utils/sendComment', methods=['POST'])
+def sendComment():
+    data = request.get_json()
+    return utils.send_commet(data)
 
 # Función 404
 def Notfound(error):
