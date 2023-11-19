@@ -29,14 +29,34 @@ def get_all_recipes():
 def get_one_recipe(id):
     try:
         cursor = mysql.connection.cursor()
-        sql = "SELECT id, name, short_description, long_description, ranking, type_id FROM tc_recipe WHERE id = '{0}'".format(id)
-        cursor.execute(sql)
-        data = cursor.fetchall()
-        print(data)
-        if len(data) == 0:
+        results = []
+        steps = []
+        ingredients = []
+        comments = []
+        recipeData = {}
+        queries = [
+            "SELECT r.id, r.name, r.short_description, r.long_description, r.ranking, r.type_id, r.key_image_1, t.description FROM tc_recipe r INNER JOIN tc_type t ON t.id = r.type_id WHERE r.id = '{0}'".format(id),
+            "SELECT description FROM tc_steps WHERE recipe_id = {0};".format(id),
+            "SELECT description FROM tc_ingredient WHERE recipe_id = {0};".format(id),
+            "SELECT comment, date FROM tc_comment WHERE recipe_id = {0};".format(id),
+        ]
+        for query in queries:
+            cursor.execute(query)
+            data = cursor.fetchall()
+            results.append(data)
+        if len(results) == 0:
             return jsonify({'recetas':{}, 'message':'Receta no encontrada', 'code':404})
-        recipe = {'id':data[0][0],'name':data[0][1],'short_description':data[0][2],'long_description':data[0][3],'ranking':data[0][4],'type':data[0][5]}
-        return jsonify({'recetas':recipe, 'message':'Consulta exitosa', 'code':200})
+        recipeData['detail'] = {'id':results[0][0][0],'name':results[0][0][1],'short_description':results[0][0][2],'long_description':results[0][0][3],'ranking':results[0][0][4],'type':results[0][0][5], "key_img": results[0][0][6], "type_description": results[0][0][7]}
+        for step in results[1]:
+            steps.append(step[0])
+        for ingredient in results[2]:
+            ingredients.append(ingredient[0])
+        for comment in results[3]:
+            comments.append({'comment':comment[0], 'date':comment[1]})
+        recipeData['steps'] = steps
+        recipeData['ingredients'] = ingredients
+        recipeData['comments'] = comments
+        return jsonify({'receta':recipeData, 'message':'Consulta exitosa', 'code':200})
     except Exception as ex:
         print(ex)
         return jsonify({'recetas':{}, 'message':'Error al realizar la operación', 'code':400})

@@ -7,6 +7,7 @@ from flask_cors import CORS
 from service import recipe_service as recipe
 from service import user_service as user
 from service import utils_service as utils
+from service import pdfBuilder as builder
 
 app = Flask(__name__)
 mysql  = MySQL(app)
@@ -62,6 +63,14 @@ def insertarReceta():
 def recipeByCategory():
     id = request.args['id']
     return recipe.get_Recetas_Categoria(id)
+
+"""
+    **** Genera el PDF de una receta (Base 64) ***
+"""
+@app.route('/recipe/GeneratePDFRecipe', methods=['GET'])
+def generatePDFRecipe():
+    id = request.args['id']
+    return builder.build_pdf_recipe(id)
 
 
 # ***********************************************

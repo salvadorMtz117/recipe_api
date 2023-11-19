@@ -22,6 +22,9 @@ class GCPConfig():
     MYSQL_DB = 'db_recipe'
     MYSQL_PORT = 3306
 
+class S3Bucket():
+    BUCKET_URL = 'https://recipe-images-project.s3.us-east-2.amazonaws.com/'
+
 config = {
     'development': DevelopmentConfig,
     'local': LocalConfig,
